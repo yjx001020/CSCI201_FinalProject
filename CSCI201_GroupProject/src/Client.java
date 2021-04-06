@@ -31,13 +31,11 @@ public class Client {
 		}
 		//logging in
 		Scanner in=new Scanner(System.in);
-		System.out.println("Are you a student or a faculty?S/F");
-		ans= in.nextLine();
-		System.out.println("Please enter your id");
+		System.out.println("Please enter your email");
 		myid=in.nextLine();
 		System.out.println("Please enter your password");
 		String pasw=in.nextLine();
-		pw.println(ans+","+myid+","+pasw);
+		pw.println(myid+","+pasw);
 		pw.flush();
 		//start listening
 		while(!login) {
@@ -50,13 +48,14 @@ public class Client {
 				else if(order.substring(0,7).compareTo("Success")==0) {
 					System.out.println("here11");
 					String[] info_list=order.split(",");
+					ans=info_list[1];
 					if(ans.compareTo("S")==0) {
-						System.out.println("is Student" + info_list[1]);
-						user=new Student(info_list[1], myid, this);
+						System.out.println("is Student" + info_list[2]);
+						user=new Student(info_list[2], myid, this);
 						user.JoinQ();
 					}
 					else {
-						user=new Faculty(info_list[1], myid, this);
+						user=new Faculty(info_list[2], myid, this);
 						user.announce("Class Starts!!!!!!!!!!!!!");
 						user.check();
 						user.check();
@@ -74,7 +73,6 @@ public class Client {
 		while(running) {
 			try {
 				String order=br.readLine();
-				System.out.println(order);
 				if(order==null) {
 					System.out.println("NULL");
 					//do nothing

@@ -16,7 +16,7 @@ import javax.print.attribute.standard.Severity;
 public class FacultyS extends Thread{
 	public HashSet<FacultyS> faculty;
 	public ArrayList<StudentS> mainQueue;
-	private int id;
+	private String username;
 	private String passWord;
 	private Boolean isStart;
 	//server - client info
@@ -31,8 +31,8 @@ public class FacultyS extends Thread{
 	PreparedStatement ps = null;
 	ResultSet rs = null;
 	
-	public FacultyS(int id,String passWord,Server server,Socket s) {
-		this.id = id;
+	public FacultyS(String username,String passWord,Server server,Socket s) {
+		this.username = username;
 		this.passWord = passWord;
 		this.faculty = server.faculty;
 		this.s = s;
@@ -64,7 +64,7 @@ public class FacultyS extends Thread{
 				pw.println("Invalid username and password");
 				pw.flush();
 			}else {
-				pw.println("Success,"+facultyName);
+				pw.println("Success,F,"+facultyName);
 				pw.flush();
 				faculty.add(this);
 				executors.execute(this);
@@ -95,9 +95,11 @@ public class FacultyS extends Thread{
 	}
 	//popStudent
 	public void popStudent() {
-		mainQueue.get(0).getChecked();
-		mainQueue.remove(0);
-		server.boardcast();
+		if(!mainQueue.isEmpty()) {
+			mainQueue.get(0).getChecked();
+			mainQueue.remove(0);
+			server.boardcast();
+		}
 	}
 	//faculty boardcast
 	public void boardcastMessage(String message) {

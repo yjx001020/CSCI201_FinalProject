@@ -37,18 +37,19 @@ public class Server {
 				String line;
 				String type = null;
 				String passWard = null;
-				int id = -1;
+				String username = "";
 				if ((line = br.readLine()) != null) {
 			        String[] values = line.split(",");
-			        type = values[0];
-			        id = Integer.parseInt(values[1]);
-			        passWard = values[2];
+			        username = values[0];
+			        passWard = values[1];
 			        System.out.println("type is " + type);
 				}
+				//find type
+				
 				if(type.equals("S")){//student connect
-					StudentS studentS = new StudentS(id,passWard,this,s);
+					StudentS studentS = new StudentS(username,passWard,this,s);
 				}else if(type.equals("F")){
-					FacultyS facultyF = new FacultyS(id,passWard,this,s);
+					FacultyS facultyF = new FacultyS(username,passWard,this,s);
 				}else {
 					pw.println("Invalid username and password");
 					pw.flush();

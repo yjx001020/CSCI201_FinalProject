@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 public class StudentS extends Thread{
 	public ArrayList<StudentS> mainQueue;
 	public ArrayList<StudentS> studentMem;
-	private int id;
+	private String email;
 	private String passWord;
 	private Boolean isStart;
 	//server - client info
@@ -30,8 +30,8 @@ public class StudentS extends Thread{
 	PreparedStatement ps = null;
 	ResultSet rs = null;
 	
-	public StudentS(int id,String passWord,Server server,Socket s) {
-		this.id = id;
+	public StudentS(String email,String passWord,Server server,Socket s) {
+		this.email = email;
 		this.passWord = passWord;
 		this.mainQueue = server.mainQueue;
 		this.server = server;
@@ -64,7 +64,7 @@ public class StudentS extends Thread{
 				pw.println("Invalid username and password");
 				pw.flush();
 			}else {
-				String tempString = "Success,"+studentName;
+				String tempString = "Success,S,"+studentName;
 				System.out.println(tempString);
 				pw.println(tempString);
 				pw.flush();

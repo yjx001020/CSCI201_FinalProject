@@ -3,11 +3,11 @@
 public abstract class Person {
 	public boolean inQueue;
 	public String name;
-	public String id;
+	public String email;
 	public Client client;
 	public Person(String n,String i, Client c) {
 		name=n;
-		id=i;
+		email=i;
 		client=c;
 	}
 	public void sendM(String message) {
