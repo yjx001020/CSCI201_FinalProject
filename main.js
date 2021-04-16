@@ -1,6 +1,7 @@
 //get general info
-let endpoint = "";
+let endpoint = "test.txt";
 let ids = []; //get refreshed?
+let currentStudentId = 123456789;
 ajax(endpoint, displayGeneralInfo);
 
 
@@ -28,7 +29,7 @@ function displayGeneralInfo(results) {
 
 	// Clear out all previous results before showing new ones
 
-	let queue = document.querySelector("currentStatus");
+	let queue = document.querySelector("#currentStatus");
 	while( queue.hasChildNodes() ) {
 		queue.removeChild( queue.lastChild )
 	}
@@ -40,22 +41,34 @@ function displayGeneralInfo(results) {
 
 	console.log(convertedResults);
 
-	console.log(results.data[0].temp);
-	document.querySelector("#queueStatus").innerHTML = "";
-	document.querySelector("#studentCount").innerHTML = "";
-	document.querySelector("#zoomLink").innerHTML = "";
-	document.querySelector("#announcement").innerHTML = "";
-	document.querySelector("#queueStatus").innerHTML = "";
+	document.querySelector("#queueStatus").innerHTML = convertedResults.queueStatus;
+	document.querySelector("#studentCount").innerHTML = convertedResults.studentCount;
+	document.querySelector("#zoomLink").innerHTML = convertedResults.zoomLink;
+	document.querySelector("#zoomLink").setAttribute("href", convertedResults.zoomLink);
+	document.querySelector("#announcement").innerHTML = convertedResults.announcement;
 	document.querySelector("#TA").innerHTML = "";
+	
+	let staffs = convertedResults.staffs;
 
-
+	for(let i = 0; i < staffs.length; i++) {
+		let staffName = staffs[i].staffName;
+		let email = staffs[i].email;
+		let div = document.createElement("div");
+		let link = document.createElement("a");
+    	link.setAttribute("href", "mailto:"+email);
+		link.innerHTML = staffName;
+		div.append(link);
+		document.querySelector("#TA").appendChild(div);
+	}
+	
+	
 	//fill the current queue status
-	let students = ;
+	let students = convertedResults.students;
 	for(let i = 0; i < students.length; i++) {
-		let name = ;
-		let id = ;
-		let topic = ;
-		let description = ;
+		let name = students[i].studentName;
+		let id = students[i].studentID;
+		let topic = students[i].topic;
+		let description = students[i].description;
 
 		ids.push(id);
 
@@ -89,13 +102,16 @@ function displayGeneralInfo(results) {
 		h.innerHTML = "Student Name: "+ name;
 		p1.innerHTML = "Student ID: "+ id;
 		p2.innerHTML = "Question Type: "+ topic;
-		p3.innerHTML = "Description: "+ des;
-		
+		if (description.length == 0) {
+			d1.removeChild(d1.lastChild);
+		} else {
+			p3.innerHTML = "Description: "+ description;
+		}
 	}
 	
 }
 
-document.querySelector("#leave").onclick = function(event) {
+// document.querySelector("#leave").onclick = function(event) {
 //send {studentName, studentID, leave}
 /*
 var remove = document.querySelectorAll('.dele');
@@ -121,7 +137,7 @@ var remove = document.querySelectorAll('.dele');
 				}
 			}
 */
-}
+// }
 
 document.querySelector("#addToQueue").onsubmit = function(event) {
 
@@ -176,6 +192,7 @@ document.querySelector("#addToQueue").onsubmit = function(event) {
 		p2.innerHTML = "Question Type: "+ type;
 		p3.innerHTML = "Description: "+ des;
 		b.innerHTML = "Leave the Queue";
+		// document.querySelector("#studentCount").innerHTML += 1;
 
 		ids.push(id);
 		document.querySelector('#inputName').value = "";
