@@ -1,4 +1,5 @@
-{	"students": [{
+{	"zoomLink": "https://usc.zoom.us/j/3439397859",
+	"students": [{
 			"studentName": "Tommy",
 			"studentID": "123456789",
 			"topic": "checkoff",
