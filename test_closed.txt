@@ -1,0 +1,5 @@
+{
+	"queueStatus": "Closed",
+
+	"announcement": "Please add yourself to the queue when you are ready to be checked off."
+}
