@@ -2,8 +2,35 @@
 let endpoint = "test.txt";//test_closed.txt
 let ids = []; //get refreshed?
 let currentStudentId = 123456789;
-ajax(endpoint, displayGeneralInfo);
+// ajax(endpoint, displayGeneralInfo);
+var socket;
+function connectToServer() {
+	socket = new WebSocket("ws://localhost:8080/#");
+	socket.onopen = function(event) {
+		// document.getElementById("mychat").innerHTML += "Connected!<br />";
+		ajax(endpoint, displayGeneralInfo);
+	}
+	socket.onmessage = function(event) {
+		displayGeneralInfo(event.data);
+	}
+	socket.onclose = function(event) {
+		// document.getElementById("mychat").innerHTML += "Disconnected!<br />";
+	}
+}
 
+function sendMessage() {
+	// TODO: Add the leave button
+	// message {studentName, studentID, topic, description, leave}
+	let student = {
+    	"studentName": document.addForm.studentName.value,
+    	"studentID": document.addForm.studentID.value,
+    	"topic": document.addForm.topic.value,
+    	"description": document.addForm.description.value
+    }
+	String studentJson = JSON.stringify(student);
+	socket.send(studentJson);
+	return false;
+}
 
 function ajax(endpoint, returnFunction) {
 	let httpRequest = new XMLHttpRequest();

@@ -58,7 +58,7 @@
 		}
 	</style>
 </head>
-<body>
+<body onload="connectToServer()">
 	<nav class="navbar navbar-expand-md navbar-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="guestPage.html">Queue</a>
@@ -127,7 +127,7 @@
 			  </div>
 			  <div class="card-body submit-form">
 
-			    <form id = "officehour" method="POST" action=""> <!--  method="POST" action="###" -->
+			    <form id = "officehour" name="addForm" onsubmit="return sendMessage();" > <!--  method="POST" action="###" -->
 				  <div class="row mb-3">
 				    <label for="inputName" class="col-sm-2 col-form-label">
 				    	Student Name
@@ -203,88 +203,89 @@
 
     <script>
 
-    	document.querySelector("#officehour").onsubmit = function(event) {
 
-			event.preventDefault();
+  //   	document.querySelector("#officehour").onsubmit = function(event) {
 
-			console.log("submitted!");
+		// 	event.preventDefault();
+
+		// 	console.log("submitted!");
 
 
-			var name = document.querySelector('#inputName').value.trim();
-			var id = document.querySelector('#studentId').value.trim();
-			var description = document.querySelector('#comment').value.trim();
-			var topic = displayRadioValue();
+		// 	var name = document.querySelector('#inputName').value.trim();
+		// 	var id = document.querySelector('#studentId').value.trim();
+		// 	var description = document.querySelector('#comment').value.trim();
+		// 	var topic = displayRadioValue();
 			
-			//check student is not already in queue
-			if(name.length > 0 && id.length > 0){
-				// check if student is already on list
-				for(var i = 0; i < ids.length; i++){
-					if(id == ids[i]) {
-						alert("Student with ID: (" + id + ") is already in the Office Hour queue.");
-						return false;
-					}
-					//TODO: check if the id entered is the same as the login id!
-				}
+		// 	//check student is not already in queue
+		// 	if(name.length > 0 && id.length > 0){
+		// 		// check if student is already on list
+		// 		for(var i = 0; i < ids.length; i++){
+		// 			if(id == ids[i]) {
+		// 				alert("Student with ID: (" + id + ") is already in the Office Hour queue.");
+		// 				return false;
+		// 			}
+		// 			//TODO: check if the id entered is the same as the login id!
+		// 		}
 				
-				//After the form is posted, call ajax again or update in the frontend?
-				//add the student to the queue
-				document.querySelector('#name-error').innerHTML = "";
-				document.querySelector('#id-error').innerHTML = "";
-				var card = document.createElement('div');
-				var d1 = document.createElement('div');
-				var h = document.createElement('h5');
-				var p1 = document.createElement('p');
-				var p2 = document.createElement('p');
-				var p3 = document.createElement('p');
-				var b = document.createElement('button');
+		// 		//After the form is posted, call ajax again or update in the frontend?
+		// 		//add the student to the queue
+		// 		document.querySelector('#name-error').innerHTML = "";
+		// 		document.querySelector('#id-error').innerHTML = "";
+		// 		var card = document.createElement('div');
+		// 		var d1 = document.createElement('div');
+		// 		var h = document.createElement('h5');
+		// 		var p1 = document.createElement('p');
+		// 		var p2 = document.createElement('p');
+		// 		var p3 = document.createElement('p');
+		// 		var b = document.createElement('button');
 
-				card.classList.add('card');
-				d1.classList.add('card-body');
-				d1.classList.add('ma');
-				b.classList.add('btn');
-				b.classList.add('btn-primary');
-				b.id = "remove";
+		// 		card.classList.add('card');
+		// 		d1.classList.add('card-body');
+		// 		d1.classList.add('ma');
+		// 		b.classList.add('btn');
+		// 		b.classList.add('btn-primary');
+		// 		b.id = "remove";
 				
-				d1.appendChild(h);
-				d1.appendChild(p1);
-				d1.appendChild(p2);
-				d1.appendChild(p3);
-				d1.appendChild(b);
-				card.appendChild(d1);
+		// 		d1.appendChild(h);
+		// 		d1.appendChild(p1);
+		// 		d1.appendChild(p2);
+		// 		d1.appendChild(p3);
+		// 		d1.appendChild(b);
+		// 		card.appendChild(d1);
 
-				document.querySelector('#currentStatus').appendChild(card);
-				h.innerHTML = "Student Name: "+ name;
-				p1.innerHTML = "Student ID: "+ id;
-				p2.innerHTML = "Question Type: "+ topic;
-				p3.innerHTML = "Description: "+ description;
-				b.innerHTML = "Leave the Queue";
+		// 		document.querySelector('#currentStatus').appendChild(card);
+		// 		h.innerHTML = "Student Name: "+ name;
+		// 		p1.innerHTML = "Student ID: "+ id;
+		// 		p2.innerHTML = "Question Type: "+ topic;
+		// 		p3.innerHTML = "Description: "+ description;
+		// 		b.innerHTML = "Leave the Queue";
 
 
-				ids.push(id);
-				document.querySelector('#inputName').value = "";
-				document.querySelector('#studentId').value = "";
-				document.querySelector('#comment').value = "";
+		// 		ids.push(id);
+		// 		document.querySelector('#inputName').value = "";
+		// 		document.querySelector('#studentId').value = "";
+		// 		document.querySelector('#comment').value = "";
 
-			}else if(name.length == 0 && id.length > 0){
-				document.querySelector('#name-error').innerHTML = "This field is required.";   //field missing
-			}else if(name.length > 0 && id.length == 0){
-				document.querySelector('#id-error').innerHTML = "This field is required.";     //field missing
-			}else{
-				document.querySelector('#name-error').innerHTML = "This field is required.";   //field missing
-				document.querySelector('#id-error').innerHTML = "This field is required.";
-			}
-		}
+		// 	}else if(name.length == 0 && id.length > 0){
+		// 		document.querySelector('#name-error').innerHTML = "This field is required.";   //field missing
+		// 	}else if(name.length > 0 && id.length == 0){
+		// 		document.querySelector('#id-error').innerHTML = "This field is required.";     //field missing
+		// 	}else{
+		// 		document.querySelector('#name-error').innerHTML = "This field is required.";   //field missing
+		// 		document.querySelector('#id-error').innerHTML = "This field is required.";
+		// 	}
+		// }
 
-		function displayRadioValue() {
-			var ele = document.getElementsByName('topic');  
-			for(i = 0; i < ele.length; i++) {
-		    	if(ele[i].checked){
-		    		return ele[i].value;
-		    	}
-		    }
-		}
+		// function displayRadioValue() {
+		// 	var ele = document.getElementsByName('topic');  
+		// 	for(i = 0; i < ele.length; i++) {
+		//     	if(ele[i].checked){
+		//     		return ele[i].value;
+		//     	}
+		//     }
+		// }
 		
-		document.querySelector('#remove').onclick = remove();
+		// document.querySelector('#remove').onclick = remove();
 		
 		
 
