@@ -1,69 +1,99 @@
-//get general info
-let endpoint = "test.txt";//test_closed.txt
-let ids = []; //get refreshed?
-let currentStudentId = 123456789;
-// ajax(endpoint, displayGeneralInfo);
+
 var socket;
 function connectToServer() {
-	socket = new WebSocket("ws://localhost:8080/#");
+	// backend @ServerEndpoint(value = "/studentPage")
+	socket = new WebSocket("ws://localhost:8080/CSCI201_FinalProject/studentPage");
 	socket.onopen = function(event) {
-		// document.getElementById("mychat").innerHTML += "Connected!<br />";
-		ajax(endpoint, displayGeneralInfo);
+		document.getElementById("debug").innerHTML += "Connected!<br />";
 	}
+	//Server should send JSON info to fronend immediately @OnOpen
 	socket.onmessage = function(event) {
+		//server sends JSON info like below
+		/*{
+			"queueStatus": "Running",
+
+			"studentCount": "2",
+
+			"zoomLink": "https://usc.zoom.us/j/3439397859",
+
+			"staffs": [{
+					"staffName": "Randall",
+					"email": "randall@usc.edu"
+				},
+				{
+					"staffName": "Ryan",
+					"email": "varun@usc.edu"
+				}
+			],
+
+			"announcement": "Please add yourself to the queue when you are ready to be checked off.",
+
+			"students": [{
+					"studentName": "Tommy",
+					"studentID": "123456789",
+					"topic": "checkoff",
+					"description": ""
+				},
+
+				{
+					"studentName": "Trojan",
+					"studentID": "234567890",
+					"topic": "question",
+					"description": "hello world"
+				}
+			]
+		}*/
 		displayGeneralInfo(event.data);
 	}
 	socket.onclose = function(event) {
-		// document.getElementById("mychat").innerHTML += "Disconnected!<br />";
+		document.getElementById("debug").innerHTML += "Disconnected!<br />";
 	}
 }
 
-function sendMessage() {
-	// TODO: Add the leave button
-	// message {studentName, studentID, topic, description, leave}
+
+function add() {
+	// add to queue, send to backend {studentName, studentID, topic, description, leave}
 	let student = {
     	"studentName": document.addForm.studentName.value,
-    	"studentID": document.addForm.studentID.value,
+    	"studentID": document.addForm.studentId.value,
     	"topic": document.addForm.topic.value,
-    	"description": document.addForm.description.value
+    	"description": document.addForm.description.value,
+    	"leave": "false"
     }
-	String studentJson = JSON.stringify(student);
+
+	let studentJson = JSON.stringify(student);
+	console.log(studentJson);
 	socket.send(studentJson);
 	return false;
 }
 
-function ajax(endpoint, returnFunction) {
-	let httpRequest = new XMLHttpRequest();
+function remove(){
+	console.log("remove!");
+	var r = confirm("You are about to the leave the queue and lose your current position...");
+	if (r == true) {
+		let leaveMessage = {
+	    	"studentName": document.cookie.split('=')[1],
+	    	"studentID": "",
+	    	"topic": "",
+	    	"description": "",
+	    	"leave": "true"
+	    }
 
-	httpRequest.open("GET", endpoint);
-	httpRequest.send();
-	httpRequest.onreadystatechange = function() {
-		console.log(httpRequest.readyState);
-
-		if( httpRequest.readyState == 4) {
-
-			if (httpRequest.status == 200) {
-				returnFunction(httpRequest.responseText);
-			} else {
-				console.log("ERRORRRR!!");
-				console.log(httpRequest.status);
-			}
-		}
-	}
+		let leaveJson = JSON.stringify(leaveMessage);
+		console.log(leaveJson);
+		socket.send(leaveJson);
+	} 				
 }
 
 function displayGeneralInfo(results) {
 
 	// Clear out all previous results before showing new ones
-
 	let queue = document.querySelector("#currentStatus");
 	while( queue.hasChildNodes() ) {
 		queue.removeChild( queue.lastChild )
 	}
 
-
-	// console.log(results);
-
+	console.log(results);
 	let convertedResults = JSON.parse(results);
 
 	console.log(convertedResults);
@@ -94,7 +124,6 @@ function displayGeneralInfo(results) {
 			document.querySelector("#TA").appendChild(div);
 		}
 		
-		
 		//fill the current queue status
 		let students = convertedResults.students;
 		for(let i = 0; i < students.length; i++) {
@@ -102,8 +131,6 @@ function displayGeneralInfo(results) {
 			let id = students[i].studentID;
 			let topic = students[i].topic;
 			let description = students[i].description;
-
-			ids.push(id);
 
 			var card = document.createElement('div');
 			var d1 = document.createElement('div');
@@ -120,13 +147,16 @@ function displayGeneralInfo(results) {
 			d1.appendChild(p1);
 			d1.appendChild(p2);
 			d1.appendChild(p3);
+
 			//leave button for the current student
-			if (id == currentStudentId) {
+			var username = document.cookie.split('=')[1];
+			if (name == username) {
 				var b = document.createElement('button');
 				b.innerHTML = "Leave the Queue";
 				b.classList.add('btn');
 				b.classList.add('btn-primary');
 				b.classList.add('dele');
+				b.setAttribute("onclick", "remove()");
 				d1.appendChild(b);
 			}
 			card.appendChild(d1);
@@ -144,25 +174,5 @@ function displayGeneralInfo(results) {
 	}
 }
 
-function remove(){
-			/* var tem = this.previousSibling.previousSibling.previousSibling.innerHTML;
-			var nn = tem.replace("Student ID: ", "");
-			console.log(nn); */
-			console.log("remove!");
-			var r = confirm("You are about the leave the queue and lose your current position...");
-			if (r == true) {
-				//delete id in the queue
-				/* for( var j = 0; j < ids.length; j++){ 
-   					if (ids[j] == nn) { 
-   						ids.splice(j, 1); 
-   					}
-   				}
-   				//reduce the number of students in the queue
-				var temp  = parseInt(document.querySelector('#num').innerHTML);
-				temp -= 1;
-				document.querySelector('#num').innerHTML = temp; */
-				this.parentNode.remove();
-			} 				
-		}
 
 
