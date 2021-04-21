@@ -143,7 +143,7 @@ public class stuPageSocket {
 				Gson gsonObj = new Gson();
 		        Map<String, String> inputMap = new HashMap<String, String>();
 		        inputMap.put("studentName", studentName);
-		        inputMap.put("idStudent", idStudent);
+		        inputMap.put("studentID", idStudent);
 		        inputMap.put("topic", topic);
 		        inputMap.put("description", description);
 		        String jsonStr = gsonObj.toJson(inputMap);
@@ -169,7 +169,7 @@ public class stuPageSocket {
 				String email = rs.getString("email");
 				Gson gsonObj = new Gson();
 		        Map<String, String> inputMap = new HashMap<String, String>();
-		        inputMap.put("username", username);
+		        inputMap.put("staffName", username);
 		        inputMap.put("email", email);
 		        String jsonStr = gsonObj.toJson(inputMap);
 		        staffs += jsonStr+",";
