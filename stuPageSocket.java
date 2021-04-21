@@ -81,7 +81,7 @@ public class stuPageSocket {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/FinalProject?user=root&password=QAZwsxedc123");		
 			st = conn.createStatement();
 			String addQueryString = "INSERT INTO StudentInQueue (idStudent, studentName, topic,description)\n"
-					+ "VALUES ("+studentId+",\""+studentName+"\",\""+topic+"\",\""+description+"\");";
+					+ "VALUES ('"+studentId+"',\""+studentName+"\",\""+topic+"\",\""+description+"\");";
 			System.out.println(addQueryString);
 			st. executeUpdate(addQueryString);
 		} catch (SQLException e) {
