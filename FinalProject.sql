@@ -15,7 +15,7 @@ CREATE TABLE StudentInQueue (
   studentName VARCHAR(45) NULL,
   topic VARCHAR(45) NULL,
   description VARCHAR(45) NULL,
-  PRIMARY KEY (OrderinQueueQueue));
+  PRIMARY KEY (OrderinQueue));
 
 CREATE TABLE Users(
 	idUser INT PRIMARY KEY NOT NULL,
