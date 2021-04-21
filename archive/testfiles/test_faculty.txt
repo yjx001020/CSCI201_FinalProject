@@ -1,0 +1,16 @@
+{	"zoomLink": "https://usc.zoom.us/j/3439397859",
+	"students": [{
+			"studentName": "Tommy",
+			"studentID": "123456789",
+			"topic": "checkoff",
+			"description": ""
+		},
+
+		{
+			"studentName": "Trojan",
+			"studentID": "234567890",
+			"topic": "question",
+			"description": "hello world"
+		}
+	]
+}
