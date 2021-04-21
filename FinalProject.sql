@@ -28,6 +28,7 @@ CREATE TABLE Users(
 Create Table Staff(
 	ID int(11) primary key not null auto_increment,
     username varchar(50) not null,
+    email varchar(50) not null
 );
 Insert into Staff(username,email) values ('Mike','limike@usc.edu');
 Insert into Staff(username,email) values ('Fiona','mengfeiz@usc.edu');
