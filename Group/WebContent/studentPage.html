@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Queue Student Page</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<script>
+		var name = getUsername();
+		if (name == null || name.length == 0) {
+			window.location.href ="guestPage.html";
+		}
+
+		function getUsername() {
+			let nameEQ = "username=";
+		    let ca = document.cookie.split(';');
+		    for( let i = 0; i < ca.length; i++ ) {
+		        let c = ca[i];
+		        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		        if (c.indexOf(nameEQ) == 0) {
+					return c.substring(nameEQ.length,c.length);
+				}
+		    }
+		    return null;
+		}
+
+		function logOut() {
+			document.cookie = "username=";
+			window.location.href ="guestPage.html";
+		}
+
+
+var socket;
+function connectToServer() {
+	socket = new WebSocket("ws://localhost:8080/Group/studentPage");
+	socket.onopen = function(event) {
+		document.getElementById("debug").innerHTML += "Connected!<br />";
+	}
+	socket.onmessage = function(event) {
+		
+		displayGeneralInfo(event.data);
+	}
+	socket.onclose = function(event) {
+		document.getElementById("debug").innerHTML += "Disconnected!<br />";
+	}
+}
+
+
+function add() {
+	// add to queue, send to backend {studentName, studentID, topic, description, leave}
+	let student = {
+    	"studentName": document.addForm.studentName.value,
+    	"studentID": document.addForm.studentId.value,
+    	"topic": document.addForm.topic.value,
+    	"description": document.addForm.description.value,
+    	"leave": "false"
+    }
+
+	let studentJson = JSON.stringify(student);
+	console.log(studentJson);
+	socket.send(studentJson);
+	return false;
+}
+
+function remove(){
+	console.log("remove!");
+	var r = confirm("You are about to the leave the queue and lose your current position...");
+	if (r == true) {
+		let leaveMessage = {
+	    	"studentName": document.cookie.split('=')[1],
+	    	"studentID": "",
+	    	"topic": "",
+	    	"description": "",
+	    	"leave": "true"
+	    }
+
+		let leaveJson = JSON.stringify(leaveMessage);
+		console.log(leaveJson);
+		socket.send(leaveJson);
+	} 				
+}
+
+function displayGeneralInfo(results) {
+
+	// Clear out all previous results before showing new ones
+	let queue = document.querySelector("#currentStatus");
+	while( queue.hasChildNodes() ) {
+		queue.removeChild( queue.lastChild )
+	}
+
+	console.log(results);
+	let convertedResults = JSON.parse(results);
+
+	console.log(convertedResults);
+
+	document.querySelector("#queueStatus").innerHTML = convertedResults.queueStatus;
+	if (convertedResults.queueStatus == "Closed") {
+		document.querySelector("#submit").setAttribute("disabled", true);
+		document.querySelector("#zoomLink").innerHTML = "";
+		document.querySelector("#TA").innerHTML = "None";
+		document.querySelector("#announcement").innerHTML = "The queue is closed. Check back later!";
+	} else {
+		document.querySelector("#studentCount").innerHTML = convertedResults.studentCount;
+		document.querySelector("#zoomLink").innerHTML = convertedResults.zoomLink;
+		document.querySelector("#zoomLink").setAttribute("href", convertedResults.zoomLink);
+		document.querySelector("#announcement").innerHTML = convertedResults.announcement;
+		document.querySelector("#TA").innerHTML = "";
+		
+		let staffs = convertedResults.staffs;
+
+		for(let i = 0; i < staffs.length; i++) {
+			let staffName = staffs[i].staffName;
+			let email = staffs[i].email;
+			let div = document.createElement("div");
+			let link = document.createElement("a");
+	    	link.setAttribute("href", "mailto:"+email);
+			link.innerHTML = staffName;
+			div.append(link);
+			document.querySelector("#TA").appendChild(div);
+		}
+
+		var username = getUsername();
+		document.querySelector("#username").innerHTML = username;
+		
+		//fill the current queue status
+		let students = convertedResults.students;
+		for(let i = 0; i < students.length; i++) {
+			let name = students[i].studentName;
+			let id = students[i].studentID;
+			let topic = students[i].topic;
+			let description = students[i].description;
+
+			var card = document.createElement('div');
+			var d1 = document.createElement('div');
+			var h = document.createElement('h5');
+			var p1 = document.createElement('p');
+			var p2 = document.createElement('p');
+			var p3 = document.createElement('p');
+
+			card.classList.add('card');
+			d1.classList.add('card-body');
+			d1.classList.add('ma');
+			
+			d1.appendChild(h);
+			d1.appendChild(p1);
+			d1.appendChild(p2);
+			d1.appendChild(p3);
+
+			//leave button for the current student
+			
+			if (name == username) {
+				var b = document.createElement('button');
+				b.innerHTML = "Leave the Queue";
+				b.classList.add('btn');
+				b.classList.add('btn-primary');
+				b.classList.add('dele');
+				b.setAttribute("onclick", "remove()");
+				d1.appendChild(b);
+			}
+			card.appendChild(d1);
+
+			document.querySelector('#currentStatus').appendChild(card);
+			h.innerHTML = "Student Name: "+ name;
+			p1.innerHTML = "Student ID: "+ id;
+			p2.innerHTML = "Question Type: "+ topic;
+			if (description.length == 0) {
+				d1.removeChild(d1.lastChild);
+			} else {
+				p3.innerHTML = "Description: "+ description;
+			}
+		}
+	}
+}
+
+
+
+</script>
+	
+
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<style>
+		#welcome {
+			margin-top: 40px;
+			text-align: center;
+		}
+		.navbar {
+		    position: relative;
+		    display: flex;
+		    flex-wrap: wrap;
+		    align-items: center;
+		    justify-content: space-between;
+		    padding: .5rem 1rem;
+		    background-color: #343a40!important;
+		}
+		.navbar-text {
+			padding: .5rem 1rem;
+			color: rgba(255,255,255,.5);
+		}
+		.row {
+			margin: 20px;
+		}
+		.card-header {
+			background-color: rgb(172, 213, 255);
+		}
+		#star {
+			color: #D73C3A;
+			font-size: 15px;
+		}
+		.required {
+			font-size: 12px;
+			color: #D73C3A;
+			font-style: italic;
+		}
+		#name-error {
+			position: absolute;
+			top:100px;
+			font-size: 12px;
+			color: #D73C3A;
+		}
+		#id-error {
+			position: absolute;
+			top:160px;
+			font-size: 12px;
+			color: #D73C3A;
+		}
+		#num{
+			font-size: 20px;
+			color: #D73C3A;
+		}
+	</style>
+</head>
+<body onload="connectToServer()">
+	<nav class="navbar navbar-expand-md navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="guestPage.html">Queue</a>
+        <div class="navbar-nav">
+        	<div class="navbar-text" id="username">username</div>
+        	  <a class="mr-3 btn btn-secondary" onclick="logOut();">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+
+    <div class="container-fluid">
+
+      <div class="row">
+      	<h2>CSCI 201 Office Hour</h2>
+      	<a href="" id="zoomLink">Zoom Link</a>
+      </div>
+
+      <div class="row">
+        <div class="mb-3 mb-md-0 col-12 col-md-4 col-lg-3">
+          <div class="card">
+      		<div class="card-body">
+          	<h5>On-Duty Staff</h5>
+          	<div id="TA">TA name</div>
+          	</div>
+          </div>
+
+          <br>
+          <div class="card">
+      		<div class="card-body">
+          		<h5>Queue status</h5>
+          		<p id="queueStatus">Running</p>
+          		<span id = "studentCount">0</span>
+          		<span>students are waiting in the queue.</span>
+          	</div>
+          </div>
+
+          <div id="debug"></div>
+        </div>
+       <div class="col-12 col-md-8 col-lg-9">
+        	<div class="card">
+	            <div class="card-header">
+			      Announcement
+			    </div>
+				<div class="card-body" id="announcement">
+	      		  Queue staff message
+	      	    </div>
+	        </div>
+
+			<br>
+
+	        <div class="card">
+			  <div class="card-header">
+			    Add to queue
+			  </div>
+			  <div class="card-body submit-form">
+
+			    <form id = "officehour" name="addForm"  > <!--  method="POST" action="###"   onsubmit="return sendMessage();"-->
+				  <div class="row mb-3">
+				    <label for="inputName" class="col-sm-2 col-form-label">
+				    	Student Name
+				    	<span id = "star">*</span>
+					</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" id="inputName" name="studentName" required>
+				    </div>
+				    <p id="name-error"></p>
+				  </div>
+				  <div class="row mb-3">
+				    <label for="studentId" class="col-sm-2 col-form-label">
+				    	Student ID
+				    	<span id = "star">*</span>
+					</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" id="studentId" name="studentId" required>
+				    </div>
+				    <p id="id-error"></p>
+				  </div>
+				  <fieldset class="row mb-3">
+				    <legend class="col-form-label col-sm-2 pt-0">Topic</legend>
+				    <div class="col-sm-10">
+				      <div class="form-check">
+				        <input class="form-check-input" type="radio" name="topic" id="gridRadios1" value="Checkoff" checked>
+				        <label class="form-check-label" for="gridRadios1">
+				          Checkoff
+				        </label>
+				      </div>
+				      <div class="form-check">
+				        <input class="form-check-input" type="radio" name="topic" id="gridRadios2" value="question">
+				        <label class="form-check-label" for="gridRadios2">
+				          Question
+				        </label>
+				      </div>
+				    </div>
+				  </fieldset>
+				  <div class="row mb-3">
+				    <label for="comment" class="col-sm-2 col-form-label">Question Description</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" id="comment" placeholder="Optional" name="description">
+				    </div>
+				  </div>
+				  <div class="row mb-3 required">
+						*Required
+					</div>
+				  <button role="button" type="button" class="btn btn-primary" id="submit" onclick="return add();">Submit</button>
+				</form>
+			  </div>
+			</div>
+			<br>
+			<div class="card" id="header">
+				<div class = "card-header">Current Status</div>
+	        </div>
+
+	        <div id = "currentStatus">
+	        	<!-- <div class="card">
+	      			<div class="card-body">
+			          	<h5>Jessie Yang</h5> 
+			          	<p>student id</p>
+			          	<p>Time, location</p>
+			          	<p>Checkoff</p>
+			          	<p>Comment</p>
+			          	<button role="button" type="submit" class="btn btn-primary">Leave the queue</button>
+	          		</div>
+	        	</div> -->
+	        </div>
+
+
+	       </div>
+        </div>
+            
+    </div>
+
+</body>
+</html>

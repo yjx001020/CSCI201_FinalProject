@@ -20,6 +20,7 @@ CREATE TABLE StudentInQueue (
 CREATE TABLE Users(
   idUser INT PRIMARY KEY NOT NULL,
     UserName VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
     UserPassword VARCHAR(50) NOT NULL,
     Fname VARCHAR(50) NOT NULL,
     Lname VARCHAR(50) NOT NULL,
@@ -30,16 +31,15 @@ Create Table Staff(
     username varchar(50) not null,
     email varchar(50) not null
 );
-INSERT INTO Staff(username,email) VALUES ('Mike','limike@usc.edu');
 INSERT INTO Staff(username,email) VALUES ('Fiona','mengfeiz@usc.edu');
 INSERT INTO Queue(idQueue,queueStatus,zoomLink,announcement) VALUES (1,'Running','https://usc.zoom.us/j/93359954220?pwd=M2lVdUZzOFdyRGdISWE1MkZ6dzJ6Zz09','Office Hour begins! Let us coding!');
 INSERT INTO StudentInQueue(OrderinQueue,idStudent,studentName,topic,description) VALUES (1,1234,"Jessi","question","What's a websocket?");
 INSERT INTO StudentInQueue(OrderinQueue,idStudent,studentName,topic,description) VALUES (2,12345,"Chengxi","Checkoff","Lab12 checkOff");
-INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty) 
-VALUES (123,'Mike',"123456","Mike","Li",1);
-INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty) 
-VALUES (701,'Fiona',"123456","Fiona","Zhang",1);
-INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty) 
-VALUES (1234,'Jessie',"123456","Jessie","Yang",0);
-INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty) 
-VALUES (12345,'Chengxi',"123456","Chengxi","Xu",0);
+INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty,email) 
+VALUES (123,'Mike',"123456","Mike","Li",1,"1@usc.edu");
+INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty,email) 
+VALUES (701,'Fiona',"123456","Fiona","Zhang",1,"2@usc.edu");
+INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty,email) 
+VALUES (1234,'Jessie',"123456","Jessie","Yang",0,"3@usc.edu");
+INSERT INTO Users(idUser,UserName,UserPassword,Fname,Lname,isFaculty,email) 
+VALUES (12345,'Chengxi',"123456","Chengxi","Xu",0,"4@usc.edu");
