@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Queue Faculty Page</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<style>
+		#welcome {
+			margin-top: 40px;
+			text-align: center;
+		}
+		.navbar {
+		    position: relative;
+		    display: flex;
+		    flex-wrap: wrap;
+		    align-items: center;
+		    justify-content: space-between;
+		    padding: .5rem 1rem;
+		    background-color: #343a40!important;
+		}
+		.navbar-text {
+			padding: .5rem 1rem;
+			color: rgba(255,255,255,.5);
+		}
+		.row {
+			margin: 20px;
+		}
+		.card-header {
+			background-color: rgb(172, 213, 255);
+		}
+		#star {
+			color: #D73C3A;
+			font-size: 15px;
+		}
+		.required {
+			font-size: 12px;
+			color: #D73C3A;
+			font-style: italic;
+		}
+		#name-error {
+			position: absolute;
+			top:100px;
+			font-size: 12px;
+			color: #D73C3A;
+		}
+		#id-error {
+			position: absolute;
+			top:160px;
+			font-size: 12px;
+			color: #D73C3A;
+		}
+		#num{
+			font-size: 20px;
+			color: #D73C3A;
+		}
+		#cast{
+			margin-top: 10px;
+		}
+		#b1, #b2{
+			margin-top: 10px;
+			width:200px;
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-md navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="guestPage.html">Queue</a>
+        <div class="navbar-nav">
+        	<div class="navbar-text" id="username">username</div>
+        	
+              <a class="mr-3 btn btn-secondary" onclick="logOut();">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+
+      <div class="row">
+      	<h2>CSCI 201 Office Hour</h2>
+      	<a href="" id="zoomLink">Zoom Link</a>
+      </div>
+
+      <div class="row">
+        <div class="mb-3 mb-md-0 col-12 col-md-4 col-lg-3">
+          <div class="card">
+      		<div class="card-body">
+          	<h5>On-Duty Staff</h5>
+          	<div id="TA">TA name</div>
+          	</div>
+          </div>
+
+          <br>
+          <div class="card">
+      		<div class="card-body">
+          		<h5>Queue status</h5>
+          		<span id = "status">N/A</span>
+          		<br>
+          		<span id = "num">0</span>
+          		<span>students are waiting in the queue.</span>
+          	</div>
+          </div>
+          <button type="button" class="btn btn-primary" id="b1">Start Queue</button>
+          <button type="button" class="btn btn-primary" id="b2">End Queue</button>
+
+        </div>
+       <div class="col-12 col-md-8 col-lg-9">
+        	<div class="card">
+	          <div class="card-header">
+			    Annoucement
+			  </div>
+				<div class="card-body">
+	      		Queue staff message:
+	      		<textarea class="form-control" id="castdata" rows="3" maxlength="200" placeholder="Enter message here..."></textarea>
+	      		<button role="button" type="submit" class="btn btn-primary" id="cast" disabled>BoardCast Message</button>
+	      	  </div>
+
+	        </div>
+
+			<br>
+			<!-- <div class="card" id = "info">
+				<div class = "card-header">Current Status</div>
+				<button class="btn btn-primary" id ="checkoff" disabled>Checkoff</button>
+				<div class = "card card-body ma">
+	      </div>
+	        </div> -->
+
+        <div class="card">
+            <div class = "card-header">Current Status</div>
+            <button class="btn btn-primary" id ="checkoff" disabled>Checkoff</button>
+        </div>
+
+          <div id = "currentStatus">
+            <!-- <div class="card">
+              <div class="card-body">
+                  <h5>Jessie Yang</h5> 
+                  <p>student id</p>
+                  <p>Time, location</p>
+                  <p>Checkoff</p>
+                  <p>Comment</p>
+                  <button role="button" type="submit" class="btn btn-primary">Leave the queue</button>
+                </div>
+            </div> -->
+          </div>
+
+
+        </div>
+      </div>
+            
+    </div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script>
+
+  var name = getUsername();
+  console.log("name is "+name);
+    if (name == null || name.length == 0) {
+      window.location.href ="guestPage.html";
+    }
+
+    function getUsername() {
+      let nameEQ = "username=";
+      	
+        let ca = document.cookie.split(';');
+        for( let i = 0; i < ca.length; i++ ) {
+            let c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) {
+          return c.substring(nameEQ.length,c.length);
+        }
+       }
+    }
+
+    function logOut() {
+      document.cookie = "username=";
+      window.location.href ="guestPage.html";
+    }
+var username = getUsername();
+document.querySelector("#username").innerHTML = username;
+document.querySelector("#TA").innerHTML = username;
+  var socket;
+socket = new WebSocket("ws://192.168.0.101:8080/CSCI201_FinalProject/ws");
+
+
+
+document.querySelector("#b1").onclick = function(){
+    var name = getUsername();
+    var data = JSON.stringify({"username": name, "action": "1"});
+    document.getElementById("b1").disabled = true;
+    document.getElementById("cast").disabled = false;
+    document.getElementById("checkoff").disabled = false;
+    document.getElementById("b2").disabled = false;
+    document.getElementById("status").innerHTML = "Running";
+    socket.send(data);
+}
+document.querySelector("#b2").onclick = function(){
+    var name = getUsername();
+    var data = JSON.stringify({"username": name, "action": "0"});
+    document.getElementById("b1").disabled = false;
+    document.getElementById("cast").disabled = true;
+    document.getElementById("checkoff").disabled = true;
+    document.getElementById("b2").disabled = true;
+    document.getElementById("status").innerHTML = "Closed";
+    socket.send(data);
+}
+document.querySelector("#cast").onclick = function(){
+    var msg = document.querySelector("#castdata").value;
+    var data = JSON.stringify({"message": msg});
+    socket.send(data);
+}
+document.querySelector("#checkoff").onclick = function(){
+    var name = document.querySelector("h5").innerHTML;
+    var id = document.querySelector(".sid").innerHTML;
+    var type = document.querySelector(".qy").innerHTML;
+    var description = document.querySelector(".des").innerHTML;
+    var data = JSON.stringify({"name": name, "id": id, "type": type, "description": description});
+    socket.send(data);
+
+}
+socket.onmessage = function(e) {
+
+  let queue = document.querySelector("#currentStatus");
+  while( queue.hasChildNodes() ) {
+    queue.removeChild( queue.lastChild )
+  }
+
+
+// var count = document.querySelectorAll(".ma").size();
+// document.querySelector("#num").innerHTML = count;
+
+    var obj = JSON.parse(e.data);
+
+
+
+// var count = document.querySelectorAll(".ma").size();
+// document.querySelector("#num").innerHTML = count;
+
+//json 里面传了StudentCount吗?
+    document.querySelector("#num").innerHTML = obj.studentCount;
+    document.querySelector("#zoomLink").innerHTML = obj.zoomLink;
+    document.querySelector("#zoomLink").setAttribute("href", obj.zoomLink);
+
+    
+
+    for(i in obj.students){
+    	var card = document.createElement('div');
+    	var d1 = document.createElement('div');
+    	var h = document.createElement('h5');
+    	var p1 = document.createElement('p');
+    	var p2 = document.createElement('p');
+    	var p3 = document.createElement('p');
+
+    	card.classList.add('card');
+    	d1.classList.add('card-body');
+    	d1.classList.add('ma');
+    	p1.classList.add('sid');
+    	p2.classList.add('qy');
+    	p3.classList.add('des');
+                
+    	d1.appendChild(h);
+    	d1.appendChild(p1);
+    	d1.appendChild(p2);
+    	d1.appendChild(p3);
+    	card.appendChild(d1);
+    	document.querySelector('#currentStatus').appendChild(card);
+    	h.innerHTML = "Student Name: "+ obj.students[i].studentName;
+    	p1.innerHTML = "Student ID: "+ obj.students[i].studentID;
+    	p2.innerHTML = "Question Type: "+ obj.students[i].topic;
+    	p3.innerHTML = "Description: "+ obj.students[i].description;
+    }
+    
+}
+
+socket.onclose = function(e) {
+    // document.getElementById("#b1").disabled = true;
+    // document.getElementById("#cast").disabled = true;
+    // document.getElementById("#checkoff").disabled = true;
+    // document.getElementById("#b2").disabled = true;
+}
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
